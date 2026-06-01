@@ -1,13 +1,31 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseConfigController } from './modules/databaseconfig/databaseconfig.controller';
-import { BackupjobController } from './modules/backupjob/backupjob.controller';
-import { BackupjobService } from './modules/backupjob/backupjob.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { databaseconfigModule } from './modules/databaseconfig/databaseconfig.module';
+import { BackupJobModule } from './modules/backupjob/backupjob.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [],
-  controllers: [AppController, DatabaseConfigController, BackupjobController],
-  providers: [AppService, BackupjobService],
+  imports: [
+    ScheduleModule.forRoot(),
+    databaseconfigModule,
+    BackupJobModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+
+      username: 'postgres',
+      password: 'Vietdeptrai2003',
+
+      database: 'backup',
+
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -12,11 +12,23 @@ export class BackupjobService {
   ) {}
 
   async create(createbackupjobDto: CreateBackupJobDto) {
-    return this.repo.save(this.repo.create(createbackupjobDto));
+    const job = this.repo.create({
+      cronExpression: createbackupjobDto.cronExpression,
+      retentionDays: createbackupjobDto.retentionDays,
+      isActive: createbackupjobDto.isActive,
+      databaseConfig: {
+        id: createbackupjobDto.databaseConfigId,
+      },
+    });
+    return this.repo.save(job);
   }
 
   async findAll() {
-    return this.repo.find();
+    return this.repo.find({
+      relations: {
+        databaseConfig: true,
+      },
+    });
   }
 
   async findOne(id: number) {
