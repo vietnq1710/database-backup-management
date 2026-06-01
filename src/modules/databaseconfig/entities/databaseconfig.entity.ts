@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { DatabaseType } from 'src/common/enums/databasetype.enum';
+import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
 
 @Entity()
 export class DatabaseConfig {
@@ -29,4 +30,7 @@ export class DatabaseConfig {
 
   @Column()
   password!: string;
+
+  @OneToMany(() => BackUpJob, (backupJob) => backupJob.databaseConfig)
+  backupJobs!: BackUpJob[];
 }

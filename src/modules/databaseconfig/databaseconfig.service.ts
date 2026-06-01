@@ -11,8 +11,8 @@ export class DatabaseConfigService {
     private repo: Repository<DatabaseConfig>,
   ) {}
 
-  async create(dto: CreateDatabaseConfigDto) {
-    return this.repo.save(this.repo.create(dto));
+  async create(createdatabaseconfigDto: CreateDatabaseConfigDto) {
+    return this.repo.save(this.repo.create(createdatabaseconfigDto));
   }
 
   async findAll() {
