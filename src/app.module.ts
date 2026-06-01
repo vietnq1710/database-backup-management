@@ -4,8 +4,8 @@ import { AppService } from './app.service';
 import { DatabaseconfigControllerController } from './databaseconfig.controller/databaseconfig.controller.controller';
 
 @Module({
-  imports: [],
-  controllers: [AppController, DatabaseconfigControllerController],
-  providers: [AppService],
+    imports: [],
+    controllers: [AppController, DatabaseconfigControllerController],
+    providers: [AppService],
 })
 export class AppModule {}
