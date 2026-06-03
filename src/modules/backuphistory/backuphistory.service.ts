@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BackUpHistory } from './entities/backuphistory.entity';
 import { Repository } from 'typeorm';
+import { BackUpJob } from '../backupjob/entities/backupjob.entity';
 
 @Injectable()
 export class BackUpHistoryService {
@@ -11,8 +12,9 @@ export class BackUpHistoryService {
   ) {}
 
   async createHistory(jobId: number, backupResult: any) {
+    const JOB = { id: jobId } as BackUpJob;
     const history = this.repo.create({
-      jobId,
+      job: JOB,
       fileName: backupResult.fileName,
       filePath: backupResult.filePath,
 

@@ -1,13 +1,23 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Status } from 'src/common/enums/statustype.enum';
+import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
 
 @Entity()
 export class BackUpHistory {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  jobId!: number;
+  @ManyToOne(() => BackUpJob, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'job_id' })
+  job!: BackUpJob;
 
   @Column()
   fileName!: string;

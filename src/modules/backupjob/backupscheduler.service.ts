@@ -52,8 +52,6 @@ export class BackupSchedulerService implements OnModuleInit {
         const backupResult = await this.backupDb(job.databaseConfig);
 
         await this.backuphistoryService.createHistory(job.id, backupResult);
-
-        console.log(`Backup job ${job.id} done`);
       } catch (error) {
         console.error(error);
       }
