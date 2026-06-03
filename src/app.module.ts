@@ -5,12 +5,14 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { databaseconfigModule } from './modules/databaseconfig/databaseconfig.module';
 import { BackupJobModule } from './modules/backupjob/backupjob.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BackuphistoryModule } from './modules/backuphistory/backuphistory.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     databaseconfigModule,
     BackupJobModule,
+    BackuphistoryModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

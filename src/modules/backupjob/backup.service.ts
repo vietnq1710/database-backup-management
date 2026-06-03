@@ -1,25 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { executeOS } from 'src/common/utils/execute.os.utils';
+import { executeOS } from 'src/common/utils/executeos.utils';
+import { DatabaseConfig } from '../databaseconfig/entities/databaseconfig.entity';
 @Injectable()
 export class BackupService {
-  async backupPostgresDb(db: any) {
-    const fileName = `backup_${Date.now()}.sql`;
-    const filePath = `/backups/${fileName}`;
+  async backupPostgresDb(db: DatabaseConfig) {
+    const fileName = `${db.databaseName}_${Date.now()}.sql`;
+    const filePath = `./backups/${fileName}`;
 
-    const command = `pg_dump -U ${db.username} -h ${db.host} -p ${db.port} ${db.databaseName} -f ${filePath}`;
-
+    const command =
+      `"G:\\PostgreSQL\\bin\\pg_dump.exe" ` +
+      `-U ${db.username} ` +
+      `-h ${db.host} ` +
+      `-p ${db.port} ` +
+      `${db.databaseName} ` +
+      `-f "${filePath}"`;
     return {
       fileName,
       filePath,
-      result: await executeOS(command),
+      result: await executeOS(command, {
+        PGPASSWORD: db.password,
+      }),
     };
   }
 
-  async backupMongoDb(db: any) {
-    const fileName = `mongo_${Date.now()}`;
-    const filePath = `/backups/${fileName}`;
+  async backupMongoDb(db: DatabaseConfig) {
+    const fileName = `mongo_${db.databaseName}_${Date.now()}`;
+    const filePath = `./backups/${fileName}`;
 
-    const command = `mongodump --uri="${db.connectionString}" --out=${filePath} --gzip`;
+    const mongodumpPath = 'G:\\MONGODB_TOOLS\\bin\\mongodump.exe';
+
+    const uri =
+      `mongodb+srv://${db.username}:${db.password}` +
+      `@${db.host}/${db.databaseName}`;
+
+    const command =
+      `"${mongodumpPath}" ` +
+      `--uri="${uri}" ` +
+      `--out="${filePath}" ` +
+      `--gzip`;
+
+    console.log(command);
 
     return {
       fileName,

@@ -1,3 +1,4 @@
+import { BackUpHistory } from 'src/modules/backuphistory/entities/backuphistory.entity';
 import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
 import {
   Entity,
