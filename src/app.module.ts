@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+//import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { databaseconfigModule } from './modules/databaseconfig/databaseconfig.module';
@@ -29,7 +29,7 @@ import { RetentionModule } from './modules/retention/retention.module';
       synchronize: true,
     }),
   ],
-  controllers: [AppController],
+  //controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
