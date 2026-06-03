@@ -6,9 +6,14 @@ import { BackupSchedulerService } from './backupscheduler.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BackUpJob } from './entities/backupjob.entity';
 import { BackupService } from 'src/modules/backupjob/backup.service';
+import { BackuphistoryModule } from '../backuphistory/backuphistory.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), TypeOrmModule.forFeature([BackUpJob])],
+  imports: [
+    ScheduleModule.forRoot(),
+    TypeOrmModule.forFeature([BackUpJob]),
+    BackuphistoryModule,
+  ],
   controllers: [BackupjobController],
   providers: [BackupjobService, BackupSchedulerService, BackupService],
 })

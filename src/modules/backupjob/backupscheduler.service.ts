@@ -3,6 +3,7 @@ import { DatabaseType } from 'src/common/enums/databasetype.enum';
 import { BackupjobService } from './backupjob.service';
 import { CronJob } from 'cron';
 import { BackupService } from 'src/modules/backupjob/backup.service';
+import { BackUpHistoryService } from '../backuphistory/backuphistory.service';
 
 @Injectable()
 export class BackupSchedulerService implements OnModuleInit {
@@ -10,21 +11,21 @@ export class BackupSchedulerService implements OnModuleInit {
   constructor(
     private readonly backupjobService: BackupjobService,
     private readonly backupService: BackupService,
+    private readonly backuphistoryService: BackUpHistoryService,
   ) {}
   async onModuleInit() {
     await this.initialize();
   }
 
   async initialize() {
-    console.log('INIT BACKUP SCHEDULER');
+    console.log('BACKUP SCHEDULER');
     const jobs = await this.backupjobService.findAll();
-    console.log(jobs);
 
     console.log('JOBS LENGTH:', jobs.length);
     console.log('JOBS DATA:', jobs);
 
     if (!jobs.length) {
-      console.log('⚠️ No backup jobs found in DB');
+      console.log('No backup jobs found in DB');
     }
 
     for (const job of jobs) {
@@ -33,7 +34,7 @@ export class BackupSchedulerService implements OnModuleInit {
       }
     }
   }
-
+  /*
   createCronJob(job: any) {
     const cronJob = new CronJob(job.cronExpression, async () => {
       console.log(`Running backup job: ${job.id}`);
@@ -43,7 +44,27 @@ export class BackupSchedulerService implements OnModuleInit {
     cronJob.start();
     this.jobsMap.set(job.id, cronJob);
   }
+*/
 
+  createCronJob(job: any) {
+    const cronJob = new CronJob(job.cronExpression, async () => {
+      try {
+        const backupResult = await this.backupDb(job.databaseConfig);
+
+        await this.backuphistoryService.createHistory(job.id, backupResult);
+
+        console.log(`Backup job ${job.id} done`);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    cronJob.start();
+
+    this.jobsMap.set(job.id, cronJob);
+
+    console.log(`Cron job ${job.id} is running`);
+  }
   async backupDb(db: any) {
     switch (db.type) {
       case DatabaseType.POSTGRES:
