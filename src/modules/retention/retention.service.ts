@@ -11,7 +11,8 @@ export class RetentionService {
     private readonly repo: Repository<BackUpHistory>,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  // @Cron(CronExpression.EVERY_10_HOURS)
   async cleanupExpiredBackups() {
     console.log('Retention cleanup started');
 
