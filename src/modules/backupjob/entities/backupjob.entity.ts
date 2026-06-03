@@ -1,11 +1,12 @@
-import { BackUpHistory } from 'src/modules/backuphistory/entities/backuphistory.entity';
 import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
+import { BackUpHistory } from 'src/modules/backuphistory/entities/backuphistory.entity';
 import {
   Entity,
   Column,
   ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -31,4 +32,7 @@ export class BackUpJob {
   )
   @JoinColumn({ name: 'databaseConfigId' })
   databaseConfig!: DatabaseConfig;
+
+  @OneToMany(() => BackUpHistory, (history) => history.job)
+  histories!: BackUpHistory[];
 }

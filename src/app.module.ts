@@ -6,6 +6,7 @@ import { databaseconfigModule } from './modules/databaseconfig/databaseconfig.mo
 import { BackupJobModule } from './modules/backupjob/backupjob.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BackuphistoryModule } from './modules/backuphistory/backuphistory.module';
+import { RetentionModule } from './modules/retention/retention.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BackuphistoryModule } from './modules/backuphistory/backuphistory.modul
     databaseconfigModule,
     BackupJobModule,
     BackuphistoryModule,
+    RetentionModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
