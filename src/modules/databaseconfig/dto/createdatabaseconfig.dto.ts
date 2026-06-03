@@ -8,31 +8,31 @@ export class CreateDatabaseConfigDto {
   name!: string;
 
   @ApiProperty({
-    example: 'postgres, mongo',
+    example: 'postgres / mongo',
     description: 'type of database',
   })
   type!: DatabaseType;
 
   @ApiProperty({
-    example: 'localhost, nguyenquocviet.88zs26x.mongodb.net',
+    example: 'localhost / nguyenquocviet.88zs26x.mongodb.net',
     description: 'Host',
   })
   host!: string;
 
   @ApiProperty({
-    example: '5432, 27017',
+    example: '5432 / 27017',
     description: 'Port',
   })
   port!: number;
 
   @ApiProperty({
-    example: 'User, sample_mflix',
+    example: 'User / sample_mflix',
     description: 'Database name',
   })
   databaseName!: string;
 
   @ApiProperty({
-    example: 'postgres, vietreborn',
+    example: 'postgres / vietreborn',
     description: 'Username',
   })
   username!: string;
