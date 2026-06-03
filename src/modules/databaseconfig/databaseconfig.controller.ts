@@ -6,9 +6,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { DatabaseConfigService } from './databaseconfig.service';
 import { CreateDatabaseConfigDto } from './dto/createdatabaseconfig.dto';
+import { UpdateDatabaseConfigDto } from './dto/updatedatabaseconfig.dto';
 
 @Controller('databaseconfig')
 export class DatabaseConfigController {
@@ -30,6 +32,17 @@ export class DatabaseConfigController {
     id: number,
   ) {
     return this.databaseConfigService.findOne(id);
+  }
+
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe)
+    id: number,
+
+    @Body()
+    updatedatabaseconfigDto: UpdateDatabaseConfigDto,
+  ) {
+    return this.databaseConfigService.update(id, updatedatabaseconfigDto);
   }
 
   @Delete(':id')

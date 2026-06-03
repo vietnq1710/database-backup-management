@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BackUpJob } from './entities/backupjob.entity';
 import { Repository } from 'typeorm';
 import { CreateBackupJobDto } from './dto/createbackupjob.dto';
+import { UpdateBackupJobDto } from './dto/updatebackupjob.dto';
 
 @Injectable()
 export class BackupjobService {
@@ -33,6 +34,14 @@ export class BackupjobService {
 
   async findOne(id: number) {
     return this.repo.findOneBy({ id });
+  }
+
+  async update(id: number, updatebackupjobDto: UpdateBackupJobDto) {
+    await this.findOne(id);
+
+    await this.repo.update(id, updatebackupjobDto);
+
+    return await this.findOne(id);
   }
 
   async remove(id: number) {

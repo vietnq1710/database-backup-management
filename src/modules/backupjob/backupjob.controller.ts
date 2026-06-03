@@ -6,9 +6,11 @@ import {
   Param,
   ParseIntPipe,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { BackupjobService } from './backupjob.service';
 import { CreateBackupJobDto } from './dto/createbackupjob.dto';
+import { UpdateBackupJobDto } from './dto/updatebackupjob.dto';
 
 @Controller('backupjob')
 export class BackupjobController {
@@ -29,6 +31,17 @@ export class BackupjobController {
     id: number,
   ) {
     return this.backupjobService.findOne(id);
+  }
+
+  @Put(':id')
+  update(
+    @Param('id', ParseIntPipe)
+    id: number,
+
+    @Body()
+    updatebackupjobDto: UpdateBackupJobDto,
+  ) {
+    return this.backupjobService.update(id, updatebackupjobDto);
   }
 
   @Delete(':id')
