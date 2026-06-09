@@ -1,4 +1,4 @@
-import { Status } from '../enums/statustype.enum';
+import { Status } from '../constants/enums/statustype.enum';
 
 export interface ExcuteResult {
   status: Status;

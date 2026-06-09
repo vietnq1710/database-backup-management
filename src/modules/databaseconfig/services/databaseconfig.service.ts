@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DatabaseConfig } from './entities/databaseconfig.entity';
+import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
 import { Repository } from 'typeorm';
-import { CreateDatabaseConfigDto } from './dto/createdatabaseconfig.dto';
-import { UpdateDatabaseConfigDto } from './dto/updatedatabaseconfig.dto';
+import { CreateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/createdatabaseconfig.dto';
+import { UpdateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/updatedatabaseconfig.dto';
 @Injectable()
 export class DatabaseConfigService {
   constructor(

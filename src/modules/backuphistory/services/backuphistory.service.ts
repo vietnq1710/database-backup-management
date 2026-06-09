@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BackUpHistory } from './entities/backuphistory.entity';
+import { BackUpHistory } from 'src/modules/backuphistory/entities/backuphistory.entity';
 import { Repository } from 'typeorm';
-import { BackUpJob } from '../backupjob/entities/backupjob.entity';
+import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
 
 @Injectable()
 export class BackUpHistoryService {

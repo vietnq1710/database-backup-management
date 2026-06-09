@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { DatabaseType } from 'src/common/enums/databasetype.enum';
+import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
 import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
 
 @Entity()

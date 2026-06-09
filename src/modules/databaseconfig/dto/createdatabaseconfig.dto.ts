@@ -1,4 +1,4 @@
-import { DatabaseType } from 'src/common/enums/databasetype.enum';
+import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateDatabaseConfigDto {
   @ApiProperty({

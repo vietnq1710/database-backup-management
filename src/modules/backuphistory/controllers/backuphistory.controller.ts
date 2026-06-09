@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { BackUpHistoryService } from './backuphistory.service';
+import { BackUpHistoryService } from 'src/modules/backuphistory/services/backuphistory.service';
 
 @Controller('backuphistory')
 export class BackupHistoryController {

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { BackupjobController } from './backupjob.controller';
-import { BackupjobService } from './backupjob.service';
-import { BackupSchedulerService } from './backupscheduler.service';
+import { BackupjobController } from 'src/modules/backupjob/controllers/backupjob.controller';
+import { BackupjobService } from 'src/modules/backupjob/services/backupjob.service';
+import { BackupSchedulerService } from 'src/modules/backupjob/services/backupscheduler.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BackUpJob } from './entities/backupjob.entity';
-import { BackupService } from 'src/modules/backupjob/backup.service';
+import { BackupService } from 'src/modules/backupjob/services/backup.service';
 import { BackuphistoryModule } from '../backuphistory/backuphistory.module';
 
 @Module({

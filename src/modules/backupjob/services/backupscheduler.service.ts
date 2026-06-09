@@ -1,9 +1,9 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { DatabaseType } from 'src/common/enums/databasetype.enum';
+import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
 import { BackupjobService } from './backupjob.service';
 import { CronJob } from 'cron';
-import { BackupService } from 'src/modules/backupjob/backup.service';
-import { BackUpHistoryService } from '../backuphistory/backuphistory.service';
+import { BackupService } from 'src/modules/backupjob/services/backup.service';
+import { BackUpHistoryService } from 'src/modules/backuphistory/services/backuphistory.service';
 
 @Injectable()
 export class BackupSchedulerService implements OnModuleInit {
@@ -14,6 +14,7 @@ export class BackupSchedulerService implements OnModuleInit {
     private readonly backuphistoryService: BackUpHistoryService,
   ) {}
   async onModuleInit() {
+    console.log('testing');
     await this.initialize();
   }
 
@@ -34,35 +35,26 @@ export class BackupSchedulerService implements OnModuleInit {
       }
     }
   }
-  /*
-  createCronJob(job: any) {
-    const cronJob = new CronJob(job.cronExpression, async () => {
-      console.log(`Running backup job: ${job.id}`);
-      await this.backupDb(job.databaseConfig);
-    });
-
-    cronJob.start();
-    this.jobsMap.set(job.id, cronJob);
-  }
-*/
 
   createCronJob(job: any) {
     const cronJob = new CronJob(job.cronExpression, async () => {
+      console.log(`[${new Date().toISOString()}] running backup job ${job.id}`);
       try {
         const backupResult = await this.backupDb(job.databaseConfig);
 
         await this.backuphistoryService.createHistory(job.id, backupResult);
       } catch (error) {
-        console.error(error);
+        console.error(
+          `[${new Date().toISOString()}] Backup job ${job.id} failed`,
+          error,
+        );
       }
     });
-
     cronJob.start();
-
     this.jobsMap.set(job.id, cronJob);
-
-    console.log(`Cron job ${job.id} is running`);
+    console.log(`Backup job ${job.id} is running`);
   }
+
   async backupDb(db: any) {
     switch (db.type) {
       case DatabaseType.POSTGRES:

@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import { ExcuteResult } from '../interfaces/excuteos.interface';
-import { Status } from '../enums/statustype.enum';
+import { Status } from '../constants/enums/statustype.enum';
 
 export async function executeOS(
   command: string,

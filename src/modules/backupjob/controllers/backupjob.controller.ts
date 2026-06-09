@@ -8,9 +8,9 @@ import {
   Delete,
   Put,
 } from '@nestjs/common';
-import { BackupjobService } from './backupjob.service';
-import { CreateBackupJobDto } from './dto/createbackupjob.dto';
-import { UpdateBackupJobDto } from './dto/updatebackupjob.dto';
+import { BackupjobService } from 'src/modules/backupjob/services/backupjob.service';
+import { CreateBackupJobDto } from 'src/modules/backupjob/dto/createbackupjob.dto';
+import { UpdateBackupJobDto } from 'src/modules/backupjob/dto/updatebackupjob.dto';
 
 @Controller('backupjob')
 export class BackupjobController {

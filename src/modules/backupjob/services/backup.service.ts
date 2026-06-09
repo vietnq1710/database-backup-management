@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { executeOS } from 'src/common/utils/executeos.utils';
-import { DatabaseConfig } from '../databaseconfig/entities/databaseconfig.entity';
+import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
 @Injectable()
 export class BackupService {
   async backupPostgresDb(db: DatabaseConfig) {
@@ -14,6 +14,8 @@ export class BackupService {
       `-p ${db.port} ` +
       `${db.databaseName} ` +
       `-f "${filePath}"`;
+
+    console.log(`Backup completed: ${filePath}`);
     return {
       fileName,
       filePath,
@@ -39,8 +41,7 @@ export class BackupService {
       `--out="${filePath}" ` +
       `--gzip`;
 
-    console.log(command);
-
+    console.log(`Backup completed: ${filePath}`);
     return {
       fileName,
       filePath,

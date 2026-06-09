@@ -8,9 +8,9 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { DatabaseConfigService } from './databaseconfig.service';
-import { CreateDatabaseConfigDto } from './dto/createdatabaseconfig.dto';
-import { UpdateDatabaseConfigDto } from './dto/updatedatabaseconfig.dto';
+import { DatabaseConfigService } from 'src/modules/databaseconfig/services/databaseconfig.service';
+import { CreateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/createdatabaseconfig.dto';
+import { UpdateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/updatedatabaseconfig.dto';
 
 @Controller('databaseconfig')
 export class DatabaseConfigController {

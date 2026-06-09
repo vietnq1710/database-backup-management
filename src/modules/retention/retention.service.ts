@@ -11,17 +11,17 @@ export class RetentionService {
     private readonly repo: Repository<BackUpHistory>,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_MINUTE)
   // @Cron(CronExpression.EVERY_10_HOURS)
   async cleanupExpiredBackups() {
-    console.log('Retention cleanup started');
-
+    //console.log('Retention cleanup started', process.pid, Date.now());
+    console.log('Retention cleanup started ');
     const histories = await this.repo.find({
       relations: {
         job: true,
       },
     });
-
+    console.log(`Found ${histories.length} histories`);
     const now = new Date();
 
     for (const history of histories) {
@@ -34,12 +34,18 @@ export class RetentionService {
       const expiredAt = new Date(history.endTime);
       //expiredAt.setDate(expiredAt.getDate() + retentionDays);
       expiredAt.setMinutes(expiredAt.getMinutes() + retentionDays);
-
       if (expiredAt <= now) {
         try {
           if (history.filePath && fs.existsSync(history.filePath)) {
-            fs.unlinkSync(history.filePath);
-
+            const stat = fs.statSync(history.filePath);
+            if (stat.isDirectory()) {
+              fs.rmSync(history.filePath, {
+                recursive: true,
+                force: true,
+              });
+            } else {
+              fs.unlinkSync(history.filePath);
+            }
             console.log(`Deleted file ${history.fileName}`);
           }
 

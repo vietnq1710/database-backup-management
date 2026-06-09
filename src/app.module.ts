@@ -10,7 +10,7 @@ import { RetentionModule } from './modules/retention/retention.module';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    ScheduleModule,
     databaseconfigModule,
     BackupJobModule,
     BackuphistoryModule,
