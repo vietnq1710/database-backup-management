@@ -1,17 +1,18 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
-import { BackupjobService } from 'src/modules/backupjob/services/backupjob.service';
 import { CronJob } from 'cron';
 import { BackupService } from 'src/modules/backupjob/services/backup.service';
 import { BackUpHistoryService } from 'src/modules/backuphistory/services/backuphistory.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BackupSchedulerService implements OnModuleInit {
   constructor(
     private schedulerRegistry: SchedulerRegistry,
-    private readonly backupjobService: BackupjobService,
+    @InjectRepository(BackUpJob)
+    private readonly backupjobRepo: Repository<BackUpJob>,
     private readonly backupService: BackupService,
     private readonly backuphistoryService: BackUpHistoryService,
   ) {}
@@ -21,71 +22,84 @@ export class BackupSchedulerService implements OnModuleInit {
 
   async initialize() {
     console.log('BACKUP SCHEDULER');
-    const jobs = await this.backupjobService.findAll();
-
+    const jobs = await this.backupjobRepo.find({
+      relations: {
+        databaseConfig: true,
+      },
+    });
     console.log('JOBS LENGTH:', jobs.length);
     //console.log('JOBS DATA:', jobs);
-
     if (!jobs.length) {
       console.log('No backup jobs found in DB');
     }
 
     for (const job of jobs) {
       if (job.isActive) {
-        this.addCronJob(job);
+        await this.addCronJob(job);
       }
     }
   }
 
   async addCronJob(job: BackUpJob) {
+    const jobName = this.getJobName(job.id);
+    if (this.schedulerRegistry.doesExist('cron', jobName)) {
+      return;
+    }
     const cronJob = new CronJob(job.cronExpression, async () => {
-      console.log(`[${new Date().toISOString()}] running backup job ${job.id}`);
-      try {
-        const backupResult = await this.backupDb(job.databaseConfig);
-        if (!backupResult) {
-          console.error('backup result is undefined');
-          return;
-        }
-        await this.backuphistoryService.createHistory(job.id, backupResult);
-      } catch (error) {
-        console.error(
-          `[${new Date().toISOString()}] Backup job ${job.id} failed`,
-          error,
-        );
-      }
+      await this.executeJob(job.id);
     });
-    const jobName = `backup-job-${job.id}`;
+
     this.schedulerRegistry.addCronJob(jobName, cronJob);
     cronJob.start();
     console.log(`Backup job ${job.id} is running`);
   }
 
   async updateCronJob(job: BackUpJob) {
-    this.deleteCron(job);
-
+    await this.deleteCron(job.id);
     if (job.isActive) {
-      this.addCronJob(job);
+      await this.addCronJob(job);
     }
   }
 
-  async deleteCron(job: any) {
-    const jobName = `backup-job-${job.id}`;
+  async deleteCron(jobId: number) {
+    const jobName = this.getJobName(jobId);
     if (this.schedulerRegistry.doesExist('cron', jobName)) {
       this.schedulerRegistry.deleteCronJob(jobName);
       console.log(`Deleted cron job: ${jobName}`);
     }
   }
 
-  async backupDb(db: any) {
-    switch (db.type) {
-      case DatabaseType.POSTGRES:
-        return this.backupService.backupPostgresDb(db);
+  private getJobName(jobId: number): string {
+    return `backup-job-${jobId}`;
+  }
 
-      case DatabaseType.MONGO:
-        return this.backupService.backupMongoDb(db);
+  /*private getAllCron() {
+    const jobs = this.schedulerRegistry.getCronJob();
+    return [...jobs.keys()];
+  }
+    */
 
-      default:
-        throw new Error(`Unsupported database type: ${db.type}`);
+  private async executeJob(jobId: number) {
+    try {
+      const job = await this.backupjobRepo.findOne({
+        where: {
+          id: jobId,
+        },
+        relations: {
+          databaseConfig: true,
+        },
+      });
+
+      if (!job) {
+        console.error(`Backup-job ${jobId} not found `);
+        return;
+      }
+
+      const result = await this.backupService.backupDb(job.databaseConfig);
+
+      await this.backuphistoryService.createHistory(job.id, result);
+    } catch (error) {
+      console.error(`[BACKUP JOB ${jobId}] FAILED`, error);
     }
   }
 }

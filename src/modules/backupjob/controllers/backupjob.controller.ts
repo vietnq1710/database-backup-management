@@ -40,7 +40,9 @@ export class BackupjobController {
 
     @Body()
     updatebackupjobDto: UpdateBackupJobDto,
-  ) {}
+  ) {
+    return this.backupjobService.update(id, updatebackupjobDto);
+  }
 
   @Delete(':id')
   remove(

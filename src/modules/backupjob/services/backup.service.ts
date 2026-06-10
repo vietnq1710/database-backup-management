@@ -2,9 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { executeOS } from 'src/common/utils/executeos.utils';
 import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
+import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
 @Injectable()
 export class BackupService {
   constructor(private readonly configService: ConfigService) {}
+
+  async backupDb(db: DatabaseConfig) {
+    if (!db) {
+      throw new Error('backupDb received null/undefined db');
+    }
+
+    if (!db.type) {
+      throw new Error('Database type is missing');
+    }
+    switch (db.type) {
+      case DatabaseType.POSTGRES:
+        return this.backupPostgresDb(db);
+
+      case DatabaseType.MONGO:
+        return this.backupMongoDb(db);
+
+      default:
+        throw new Error(`Unsupported database type: ${db.type}`);
+    }
+  }
 
   async backupPostgresDb(db: DatabaseConfig) {
     const backupRoot = this.configService.get<string>('backup.rootPath');
@@ -52,7 +73,6 @@ export class BackupService {
       `--uri="${uri}" ` +
       `--out="${filePath}" ` +
       `--gzip`;
-    console.log('COMMAND =', command);
     const result = await executeOS(command);
     console.log(`Backup completed: ${filePath}`);
     return {

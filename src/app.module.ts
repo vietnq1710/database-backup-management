@@ -6,7 +6,6 @@ import { databaseconfigModule } from './modules/databaseconfig/databaseconfig.mo
 import { BackupJobModule } from './modules/backupjob/backupjob.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BackuphistoryModule } from './modules/backuphistory/backuphistory.module';
-import { RetentionModule } from './modules/scheduler/retention.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import backupConfig from './config/backup.config';
 import databaseConfig from './config/database.config';
@@ -16,11 +15,10 @@ import databaseConfig from './config/database.config';
       isGlobal: true,
       load: [databaseConfig, backupConfig],
     }),
-    ScheduleModule,
+    ScheduleModule.forRoot(),
     databaseconfigModule,
     BackupJobModule,
     BackuphistoryModule,
-    RetentionModule,
     /*TypeOrmModule
       .forRoot
      {

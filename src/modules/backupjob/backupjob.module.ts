@@ -10,11 +10,12 @@ import { BackuphistoryModule } from '../backuphistory/backuphistory.module';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    ScheduleModule,
     TypeOrmModule.forFeature([BackUpJob]),
     BackuphistoryModule,
   ],
   controllers: [BackupjobController],
   providers: [BackupjobService, BackupSchedulerService, BackupService],
+  exports: [BackupjobService, BackupService],
 })
 export class BackupJobModule {}
