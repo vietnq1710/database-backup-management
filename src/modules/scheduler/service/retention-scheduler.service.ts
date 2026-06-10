@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BackUpHistory } from '../backuphistory/entities/backuphistory.entity';
+import { BackUpHistory } from '../../backuphistory/entities/backuphistory.entity';
 import { Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fs from 'fs';
@@ -11,7 +11,7 @@ export class RetentionService {
     private readonly repo: Repository<BackUpHistory>,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   // @Cron(CronExpression.EVERY_10_HOURS)
   async cleanupExpiredBackups() {
     //console.log('Retention cleanup started', process.pid, Date.now());

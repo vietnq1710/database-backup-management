@@ -6,4 +6,5 @@ export interface ExcuteResult {
   stderr: string;
   startTime: Date;
   endTime: Date;
+  command: string;
 }

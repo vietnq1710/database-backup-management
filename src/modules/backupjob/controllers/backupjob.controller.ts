@@ -9,8 +9,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { BackupjobService } from 'src/modules/backupjob/services/backupjob.service';
-import { CreateBackupJobDto } from 'src/modules/backupjob/dto/createbackupjob.dto';
-import { UpdateBackupJobDto } from 'src/modules/backupjob/dto/updatebackupjob.dto';
+import { CreateBackupJobDto } from 'src/modules/backupjob/dto/create-backupjob.dto';
+import { UpdateBackupJobDto } from 'src/modules/backupjob/dto/update-backupjob.dto';
 
 @Controller('backupjob')
 export class BackupjobController {
@@ -40,9 +40,7 @@ export class BackupjobController {
 
     @Body()
     updatebackupjobDto: UpdateBackupJobDto,
-  ) {
-    return this.backupjobService.update(id, updatebackupjobDto);
-  }
+  ) {}
 
   @Delete(':id')
   remove(

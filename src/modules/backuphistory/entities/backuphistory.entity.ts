@@ -13,10 +13,10 @@ export class BackUpHistory {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => BackUpJob, {
+  @ManyToOne(() => BackUpJob, (job) => job.histories, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'job_id' })
+  @JoinColumn({ name: 'backupJobId' })
   job!: BackUpJob;
 
   @Column()
@@ -34,6 +34,12 @@ export class BackUpHistory {
   @Column({ type: 'timestamp' })
   endTime!: Date;
 
-  @Column({ type: 'text', nullable: true })
-  log!: string;
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  log!: {
+    stdout: string;
+    stderr: string;
+  };
 }

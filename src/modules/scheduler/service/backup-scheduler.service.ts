@@ -1,20 +1,21 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
-import { BackupjobService } from './backupjob.service';
+import { BackupjobService } from 'src/modules/backupjob/services/backupjob.service';
 import { CronJob } from 'cron';
 import { BackupService } from 'src/modules/backupjob/services/backup.service';
 import { BackUpHistoryService } from 'src/modules/backuphistory/services/backuphistory.service';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
 
 @Injectable()
 export class BackupSchedulerService implements OnModuleInit {
-  private jobsMap = new Map<number, CronJob>();
   constructor(
+    private schedulerRegistry: SchedulerRegistry,
     private readonly backupjobService: BackupjobService,
     private readonly backupService: BackupService,
     private readonly backuphistoryService: BackUpHistoryService,
   ) {}
   async onModuleInit() {
-    console.log('testing');
     await this.initialize();
   }
 
@@ -23,7 +24,7 @@ export class BackupSchedulerService implements OnModuleInit {
     const jobs = await this.backupjobService.findAll();
 
     console.log('JOBS LENGTH:', jobs.length);
-    console.log('JOBS DATA:', jobs);
+    //console.log('JOBS DATA:', jobs);
 
     if (!jobs.length) {
       console.log('No backup jobs found in DB');
@@ -31,17 +32,20 @@ export class BackupSchedulerService implements OnModuleInit {
 
     for (const job of jobs) {
       if (job.isActive) {
-        this.createCronJob(job);
+        this.addCronJob(job);
       }
     }
   }
 
-  createCronJob(job: any) {
+  async addCronJob(job: BackUpJob) {
     const cronJob = new CronJob(job.cronExpression, async () => {
       console.log(`[${new Date().toISOString()}] running backup job ${job.id}`);
       try {
         const backupResult = await this.backupDb(job.databaseConfig);
-
+        if (!backupResult) {
+          console.error('backup result is undefined');
+          return;
+        }
         await this.backuphistoryService.createHistory(job.id, backupResult);
       } catch (error) {
         console.error(
@@ -50,9 +54,26 @@ export class BackupSchedulerService implements OnModuleInit {
         );
       }
     });
+    const jobName = `backup-job-${job.id}`;
+    this.schedulerRegistry.addCronJob(jobName, cronJob);
     cronJob.start();
-    this.jobsMap.set(job.id, cronJob);
     console.log(`Backup job ${job.id} is running`);
+  }
+
+  async updateCronJob(job: BackUpJob) {
+    this.deleteCron(job);
+
+    if (job.isActive) {
+      this.addCronJob(job);
+    }
+  }
+
+  async deleteCron(job: any) {
+    const jobName = `backup-job-${job.id}`;
+    if (this.schedulerRegistry.doesExist('cron', jobName)) {
+      this.schedulerRegistry.deleteCronJob(jobName);
+      console.log(`Deleted cron job: ${jobName}`);
+    }
   }
 
   async backupDb(db: any) {
