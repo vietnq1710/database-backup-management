@@ -26,6 +26,7 @@ export async function executeOS(
         }
 
         resolve({
+          command,
           status: error != null ? Status.FAILED : Status.SUCCESS,
           stdout,
           stderr,

@@ -1,35 +1,68 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { executeOS } from 'src/common/utils/executeos.utils';
 import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
+import { DatabaseType } from 'src/common/constants/enums/databasetype.enum';
 @Injectable()
 export class BackupService {
+  constructor(private readonly configService: ConfigService) {}
+
+  async backupDb(db: DatabaseConfig) {
+    if (!db) {
+      throw new Error('backupDb received null/undefined db');
+    }
+
+    if (!db.type) {
+      throw new Error('Database type is missing');
+    }
+    switch (db.type) {
+      case DatabaseType.POSTGRES:
+        return this.backupPostgresDb(db);
+
+      case DatabaseType.MONGO:
+        return this.backupMongoDb(db);
+
+      default:
+        throw new Error(`Unsupported database type: ${db.type}`);
+    }
+  }
+
   async backupPostgresDb(db: DatabaseConfig) {
+    const backupRoot = this.configService.get<string>('backup.rootPath');
+    const pgDumpPath = this.configService.get<string>(
+      'backup.postgresDumpPath',
+    );
+
     const fileName = `${db.databaseName}_${Date.now()}.sql`;
-    const filePath = `./backups/${fileName}`;
+    const filePath = `${backupRoot}/${fileName}`;
 
     const command =
-      `"G:\\PostgreSQL\\bin\\pg_dump.exe" ` +
+      `"${pgDumpPath}" ` +
       `-U ${db.username} ` +
       `-h ${db.host} ` +
       `-p ${db.port} ` +
       `${db.databaseName} ` +
       `-f "${filePath}"`;
 
+    const result = await executeOS(command, {
+      PGPASSWORD: db.password,
+    });
     console.log(`Backup completed: ${filePath}`);
     return {
       fileName,
       filePath,
-      result: await executeOS(command, {
-        PGPASSWORD: db.password,
-      }),
+      result,
     };
   }
 
   async backupMongoDb(db: DatabaseConfig) {
-    const fileName = `mongo_${db.databaseName}_${Date.now()}`;
-    const filePath = `./backups/${fileName}`;
+    const backupRoot = this.configService.get<string>('backup.rootPath');
 
-    const mongodumpPath = 'G:\\MONGODB_TOOLS\\bin\\mongodump.exe';
+    const mongodumpPath = this.configService.get<string>(
+      'backup.mongoDumpPath',
+    );
+    const fileName = `mongo_${db.databaseName}_${Date.now()}`;
+    const filePath = `${backupRoot}/${fileName}`;
 
     const uri =
       `mongodb+srv://${db.username}:${db.password}` +
@@ -40,12 +73,12 @@ export class BackupService {
       `--uri="${uri}" ` +
       `--out="${filePath}" ` +
       `--gzip`;
-
+    const result = await executeOS(command);
     console.log(`Backup completed: ${filePath}`);
     return {
       fileName,
       filePath,
-      result: await executeOS(command),
+      result,
     };
   }
 }

@@ -30,7 +30,7 @@ export class BackUpJob {
       onDelete: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'databaseConfigId' })
+  @JoinColumn({ name: 'database_config_id' })
   databaseConfig!: DatabaseConfig;
 
   @OneToMany(() => BackUpHistory, (history) => history.job)
