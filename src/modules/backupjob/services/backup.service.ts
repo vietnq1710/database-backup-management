@@ -11,7 +11,6 @@ export class BackupService {
     if (!db) {
       throw new Error('backupDb received null/undefined db');
     }
-
     if (!db.type) {
       throw new Error('Database type is missing');
     }

@@ -73,12 +73,6 @@ export class BackupSchedulerService implements OnModuleInit {
     return `backup-job-${jobId}`;
   }
 
-  /*private getAllCron() {
-    const jobs = this.schedulerRegistry.getCronJob();
-    return [...jobs.keys()];
-  }
-    */
-
   private async executeJob(jobId: number) {
     try {
       const job = await this.backupjobRepo.findOne({

@@ -48,9 +48,7 @@ export class RetentionService {
             }
             console.log(`Deleted file ${history.fileName}`);
           }
-
           await this.repo.delete(history.id);
-
           console.log(`Deleted history ${history.id}`);
         } catch (error) {
           console.error(`Cleanup failed for history ${history.id}`, error);
