@@ -19,22 +19,7 @@ import databaseConfig from './config/database.config';
     databaseconfigModule,
     BackupJobModule,
     BackuphistoryModule,
-    /*TypeOrmModule
-      .forRoot
-     {
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
 
-      username: 'postgres',
-      password: 'Vietdeptrai2003',
-
-      database: 'backup',
-
-      autoLoadEntities: true,
-      synchronize: true,
-    }
-      (),*/
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

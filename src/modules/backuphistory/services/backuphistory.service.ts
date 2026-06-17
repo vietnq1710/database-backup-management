@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BackUpHistory } from 'src/modules/backuphistory/entities/backuphistory.entity';
 import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
@@ -36,8 +36,13 @@ export class BackUpHistoryService {
   }
 
   async findOne(id: number) {
-    return this.repo.findOne({
+    const history = await this.repo.findOne({
       where: { id },
     });
+
+    if (!history) {
+      throw new NotFoundException(`Backup history id=${id} not found`);
+    }
+    return history;
   }
 }
