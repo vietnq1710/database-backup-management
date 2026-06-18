@@ -69,7 +69,7 @@ export class BackupSchedulerService implements OnModuleInit {
 
   private async executeJob(jobId: number) {
     try {
-      const job = await this.backupjobRepository.findOne(jobId);
+      const job = await this.backupjobRepository.findOneWithConfig(jobId);
 
       if (!job) {
         console.error(`Backup-job ${jobId} not found `);

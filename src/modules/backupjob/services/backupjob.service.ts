@@ -50,7 +50,12 @@ export class BackupjobService {
   }
 
   async findOne(id: number): Promise<BackUpJob> {
-    const job = await this.backupjobRepository.findOneWithConfig(id);
+    const job = await this.backupjobRepository.findOne({
+      where: { id },
+      relations: {
+        databaseConfig: true,
+      },
+    });
 
     if (!job) {
       throw new NotFoundException(`Backup-job ${id} not found`);
