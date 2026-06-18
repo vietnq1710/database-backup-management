@@ -1,36 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
 import { Repository } from 'typeorm';
 import { CreateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/create-databaseconfig.dto';
 import { UpdateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/update-databaseconfig.dto';
+import { DatabaseConfigRepository } from '../repository/databaseconfig.repository';
 @Injectable()
 export class DatabaseConfigService {
   constructor(
-    @InjectRepository(DatabaseConfig)
-    private repo: Repository<DatabaseConfig>,
+    private readonly databaseconfigRepository: DatabaseConfigRepository,
   ) {}
 
   async create(createdatabaseconfigDto: CreateDatabaseConfigDto) {
-    return this.repo.save(this.repo.create(createdatabaseconfigDto));
+    return this.databaseconfigRepository.create(createdatabaseconfigDto);
   }
 
   async findAll() {
-    return this.repo.find();
+    return this.databaseconfigRepository.findAll();
   }
 
   async findOne(id: number) {
-    return this.repo.findOneBy({ id });
+    const config = await this.databaseconfigRepository.findOne(id);
+    if (!config) {
+      throw new NotFoundException(`Database configuration ${id} not found`);
+    }
+    return config;
   }
 
   async update(id: number, updatedatabaseconfigDto: UpdateDatabaseConfigDto) {
     await this.findOne(id);
-    await this.repo.update(id, updatedatabaseconfigDto);
-
-    return await this.findOne(id);
+    return this.databaseconfigRepository.update(id, updatedatabaseconfigDto);
   }
 
   async remove(id: number) {
-    return this.repo.delete(id);
+    await this.findOne(id);
+    return this.databaseconfigRepository.remove(id);
   }
 }
