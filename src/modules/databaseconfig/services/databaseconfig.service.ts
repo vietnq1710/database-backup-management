@@ -1,7 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
-import { Repository } from 'typeorm';
 import { CreateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/create-databaseconfig.dto';
 import { UpdateDatabaseConfigDto } from 'src/modules/databaseconfig/dto/update-databaseconfig.dto';
 import { DatabaseConfigRepository } from '../repository/databaseconfig.repository';
@@ -20,7 +17,9 @@ export class DatabaseConfigService {
   }
 
   async findOne(id: number) {
-    const config = await this.databaseconfigRepository.findOne(id);
+    const config = await this.databaseconfigRepository.findOne({
+      where: { id },
+    });
     if (!config) {
       throw new NotFoundException(`Database configuration ${id} not found`);
     }
@@ -28,8 +27,11 @@ export class DatabaseConfigService {
   }
 
   async update(id: number, updatedatabaseconfigDto: UpdateDatabaseConfigDto) {
-    await this.findOne(id);
-    return this.databaseconfigRepository.update(id, updatedatabaseconfigDto);
+    const config = await this.findOne(id);
+
+    Object.assign(config, updatedatabaseconfigDto);
+
+    return this.databaseconfigRepository.save(config);
   }
 
   async remove(id: number) {

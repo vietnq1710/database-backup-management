@@ -2,30 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BackUpHistory } from '../entities/backuphistory.entity';
 import { Repository } from 'typeorm';
+import { BaseRepository } from 'src/common/repositories/base.repository';
 
 @Injectable()
-export class BackupHistoryRepository {
+export class BackupHistoryRepository extends BaseRepository<BackUpHistory> {
   constructor(
     @InjectRepository(BackUpHistory)
-    private readonly repo: Repository<BackUpHistory>,
-  ) {}
-
-  async create(data: Partial<BackUpHistory>) {
-    const entity = this.repo.create(data);
-    return this.repo.save(entity);
+    repo: Repository<BackUpHistory>,
+  ) {
+    super(repo);
   }
 
-  async findAll() {
-    return this.repo.find({
+  override async findAll() {
+    return this.repository.find({
       order: {
         startTime: 'DESC',
       },
-    });
-  }
-
-  async findOne(id: number) {
-    return this.repo.findOne({
-      where: { id },
     });
   }
 }

@@ -27,7 +27,9 @@ export class BackUpHistoryService {
   }
 
   async findOne(id: number) {
-    const history = await this.backuphistoryRepository.findOne(id);
+    const history = await this.backuphistoryRepository.findOne({
+      where: { id },
+    });
     if (!history) {
       throw new NotFoundException(`Backup history ${id} not found`);
     }
