@@ -4,15 +4,13 @@ import { BackupService } from 'src/modules/backupjob/services/backup.service';
 import { BackUpHistoryService } from 'src/modules/backuphistory/services/backuphistory.service';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { BackupJobRepository } from 'src/modules/backupjob/repository/backupjob.repository';
 
 @Injectable()
 export class BackupSchedulerService implements OnModuleInit {
   constructor(
     private schedulerRegistry: SchedulerRegistry,
-    @InjectRepository(BackUpJob)
-    private readonly backupjobRepo: Repository<BackUpJob>,
+    private readonly backupjobRepository: BackupJobRepository,
     private readonly backupService: BackupService,
     private readonly backuphistoryService: BackUpHistoryService,
   ) {}
@@ -22,11 +20,7 @@ export class BackupSchedulerService implements OnModuleInit {
 
   async initialize() {
     console.log('BACKUP SCHEDULER');
-    const jobs = await this.backupjobRepo.find({
-      relations: {
-        databaseConfig: true,
-      },
-    });
+    const jobs = await this.backupjobRepository.findAll();
     console.log('JOBS LENGTH:', jobs.length);
     //console.log('JOBS DATA:', jobs);
     if (!jobs.length) {
@@ -48,7 +42,7 @@ export class BackupSchedulerService implements OnModuleInit {
     const cronJob = new CronJob(job.cronExpression, async () => {
       await this.executeJob(job.id);
     });
-
+    console.log(`Create backup job: `, job.id);
     this.schedulerRegistry.addCronJob(jobName, cronJob);
     cronJob.start();
     console.log(`Backup job ${job.id} is running`);
@@ -75,14 +69,7 @@ export class BackupSchedulerService implements OnModuleInit {
 
   private async executeJob(jobId: number) {
     try {
-      const job = await this.backupjobRepo.findOne({
-        where: {
-          id: jobId,
-        },
-        relations: {
-          databaseConfig: true,
-        },
-      });
+      const job = await this.backupjobRepository.findOne(jobId);
 
       if (!job) {
         console.error(`Backup-job ${jobId} not found `);
