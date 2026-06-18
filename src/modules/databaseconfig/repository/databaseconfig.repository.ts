@@ -2,34 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DatabaseConfig } from '../entities/databaseconfig.entity';
 import { Repository } from 'typeorm';
+import { BaseRepository } from 'src/common/repositories/base.repository';
 
 @Injectable()
-export class DatabaseConfigRepository {
+export class DatabaseConfigRepository extends BaseRepository<DatabaseConfig> {
   constructor(
     @InjectRepository(DatabaseConfig)
-    private readonly repo: Repository<DatabaseConfig>,
-  ) {}
-
-  async create(data: Partial<DatabaseConfig>) {
-    return this.repo.save(this.repo.create(data));
-  }
-
-  async findAll() {
-    return this.repo.find();
-  }
-
-  async findOne(id: number) {
-    return this.repo.findOneBy({ id });
-  }
-
-  async update(id: number, data: Partial<DatabaseConfig>) {
-    await this.findOne(id);
-    await this.repo.update(id, data);
-
-    return await this.findOne(id);
-  }
-
-  async remove(id: number) {
-    return this.repo.delete(id);
+    repo: Repository<DatabaseConfig>,
+  ) {
+    super(repo);
   }
 }
