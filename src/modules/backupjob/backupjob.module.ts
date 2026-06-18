@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BackUpJob } from './entities/backupjob.entity';
 import { BackupService } from 'src/modules/backupjob/services/backup.service';
 import { BackuphistoryModule } from '../backuphistory/backuphistory.module';
+import { BackupJobRepository } from './repository/backupjob.repository';
 
 @Module({
   imports: [
@@ -15,7 +16,12 @@ import { BackuphistoryModule } from '../backuphistory/backuphistory.module';
     BackuphistoryModule,
   ],
   controllers: [BackupjobController],
-  providers: [BackupjobService, BackupSchedulerService, BackupService],
+  providers: [
+    BackupjobService,
+    BackupSchedulerService,
+    BackupService,
+    BackupJobRepository,
+  ],
   exports: [BackupjobService, BackupService],
 })
 export class BackupJobModule {}

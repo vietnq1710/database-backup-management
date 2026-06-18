@@ -1,41 +1,35 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
-import { Repository } from 'typeorm';
 import { CreateBackupJobDto } from 'src/modules/backupjob/dto/create-backupjob.dto';
 import { BackupSchedulerService } from 'src/modules/scheduler/service/backup-scheduler.service';
 import { UpdateBackupJobDto } from '../dto/update-backupjob.dto';
+import { BackupJobRepository } from '../repository/backupjob.repository';
+import { DatabaseConfigService } from 'src/modules/databaseconfig/services/databaseconfig.service';
 
 @Injectable()
 export class BackupjobService {
   constructor(
-    @InjectRepository(BackUpJob)
-    private readonly repo: Repository<BackUpJob>,
+    private readonly backupjobRepository: BackupJobRepository,
     private readonly schedulerService: BackupSchedulerService,
+    private readonly databaseconfigService: DatabaseConfigService,
   ) {}
 
   async create(createbackupjobDto: CreateBackupJobDto) {
-    const job = this.repo.create({
+    const databaseConfig = await this.databaseconfigService.findOne(
+      createbackupjobDto.databaseConfigId,
+    );
+    const saved = await this.backupjobRepository.create({
       cronExpression: createbackupjobDto.cronExpression,
       retentionDays: createbackupjobDto.retentionDays,
       isActive: createbackupjobDto.isActive,
-      databaseConfig: {
-        id: createbackupjobDto.databaseConfigId,
-      },
+      databaseConfig,
     });
-    const saved = await this.repo.save(job);
-    const fulljob = await this.repo.findOne({
-      where: { id: saved.id },
-      relations: {
-        databaseConfig: true,
-      },
-    });
+
+    const fulljob = await this.findOne(saved.id);
     if (!fulljob?.isActive) {
       throw new NotFoundException('error');
     }
-    if (fulljob.isActive) {
-      await this.schedulerService.addCronJob(fulljob);
-    }
+
     return fulljob;
   }
 
@@ -44,7 +38,7 @@ export class BackupjobService {
 
     Object.assign(job, dto);
 
-    const saved = await this.repo.save(job);
+    const saved = await this.backupjobRepository.save(job);
 
     await this.schedulerService.updateCronJob(saved);
 
@@ -52,20 +46,11 @@ export class BackupjobService {
   }
 
   async findAll() {
-    return this.repo.find({
-      relations: {
-        databaseConfig: true,
-      },
-    });
+    return this.backupjobRepository.findAll();
   }
 
   async findOne(id: number): Promise<BackUpJob> {
-    const job = await this.repo.findOne({
-      where: { id },
-      relations: {
-        databaseConfig: true,
-      },
-    });
+    const job = await this.backupjobRepository.findOne(id);
 
     if (!job) {
       throw new NotFoundException(`Backup-job ${id} not found`);
@@ -76,7 +61,7 @@ export class BackupjobService {
   async remove(id: number) {
     const job = await this.findOne(id);
     await this.schedulerService.deleteCron(id);
-    await this.repo.delete(id);
+    await this.backupjobRepository.remove(id);
     return job;
   }
 }
