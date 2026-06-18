@@ -8,12 +8,14 @@ import { BackUpJob } from './entities/backupjob.entity';
 import { BackupService } from 'src/modules/backupjob/services/backup.service';
 import { BackuphistoryModule } from '../backuphistory/backuphistory.module';
 import { BackupJobRepository } from './repository/backupjob.repository';
+import { databaseconfigModule } from '../databaseconfig/databaseconfig.module';
 
 @Module({
   imports: [
     ScheduleModule,
     TypeOrmModule.forFeature([BackUpJob]),
     BackuphistoryModule,
+    databaseconfigModule,
   ],
   controllers: [BackupjobController],
   providers: [

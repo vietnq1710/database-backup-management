@@ -10,5 +10,7 @@ import { DatabaseConfigRepository } from './repository/databaseconfig.repository
   controllers: [DatabaseConfigController],
 
   providers: [DatabaseConfigService, DatabaseConfigRepository],
+
+  exports: [DatabaseConfigService],
 })
 export class databaseconfigModule {}

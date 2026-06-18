@@ -26,8 +26,8 @@ export class BackupjobService {
     });
 
     const fulljob = await this.findOne(saved.id);
-    if (!fulljob?.isActive) {
-      throw new NotFoundException('error');
+    if (fulljob.isActive) {
+      await this.schedulerService.addCronJob(fulljob);
     }
 
     return fulljob;
