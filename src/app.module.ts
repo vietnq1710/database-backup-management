@@ -9,11 +9,12 @@ import { BackuphistoryModule } from './modules/backuphistory/backuphistory.modul
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import backupConfig from './config/backup.config';
 import databaseConfig from './config/database.config';
+import configuration from './config/configuration';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, backupConfig],
+      load: [databaseConfig, backupConfig, configuration],
     }),
     ScheduleModule.forRoot(),
     databaseconfigModule,
