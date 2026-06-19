@@ -12,7 +12,7 @@ export class RetentionService {
   ) {}
 
   @Cron(CronExpression.EVERY_30_SECONDS)
-  // @Cron(CronExpression.EVERY_10_HOURS)
+  //@Cron(CronExpression.EVERY_10_HOURS)
   async cleanupExpiredBackups() {
     //console.log('Retention cleanup started', process.pid, Date.now());
     console.log('Retention cleanup started ');
