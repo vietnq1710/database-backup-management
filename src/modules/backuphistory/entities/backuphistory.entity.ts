@@ -5,8 +5,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
 } from 'typeorm';
-import { Status } from 'src/common/constants/enums/statustype.enum';
-import { BackUpJob } from 'src/modules/backupjob/entities/backupjob.entity';
+import { Status } from '../../../common/constants/enums/statustype.enum';
+import { BackUpJob } from '../../backupjob/entities/backupjob.entity';
 
 @Entity()
 export class BackUpHistory {
