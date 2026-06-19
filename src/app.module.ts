@@ -31,7 +31,7 @@ import configuration from './config/configuration';
         password: config.get('database.password'),
         database: config.get('database.name'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
       }),
     }),
   ],

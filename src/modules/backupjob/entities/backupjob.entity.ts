@@ -1,5 +1,5 @@
-import { DatabaseConfig } from 'src/modules/databaseconfig/entities/databaseconfig.entity';
-import { BackUpHistory } from 'src/modules/backuphistory/entities/backuphistory.entity';
+import { DatabaseConfig } from '../../databaseconfig/entities/databaseconfig.entity';
+import { BackUpHistory } from '../../backuphistory/entities/backuphistory.entity';
 import {
   Entity,
   Column,
