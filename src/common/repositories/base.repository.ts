@@ -10,7 +10,7 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
   constructor(protected readonly repository: Repository<T>) {}
 
   create(entity: DeepPartial<T>) {
-    return this.repository.save(this.repository.create(entity));
+    return this.repository.save(entity);
   }
 
   save(entity: DeepPartial<T>) {
@@ -25,7 +25,7 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
     return this.repository.findOne(options);
   }
 
-  remove(id: number) {
+  delete(id: number) {
     return this.repository.delete(id);
   }
 }

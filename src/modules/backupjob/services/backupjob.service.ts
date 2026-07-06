@@ -66,7 +66,7 @@ export class BackupjobService {
   async remove(id: number) {
     const job = await this.findOne(id);
     await this.schedulerService.deleteCron(id);
-    await this.backupjobRepository.remove(id);
+    await this.backupjobRepository.delete(id);
     return job;
   }
 }

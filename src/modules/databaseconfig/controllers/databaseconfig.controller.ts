@@ -62,4 +62,9 @@ export class DatabaseConfigController {
   ) {
     return this.databaseConfigService.remove(id);
   }
+
+  @Get(':id/test-decrypt')
+  async testDecrypt(@Param('id', ParseIntPipe) id: number) {
+    return this.databaseConfigService.getDecryptedCredential(id);
+  }
 }
